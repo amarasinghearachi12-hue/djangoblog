@@ -24,3 +24,9 @@ class Migration(migrations.Migration):
             options={"ordering": ["-published_at", "-created_at"]},
         ),
     ]
+
+
+
+
+
+

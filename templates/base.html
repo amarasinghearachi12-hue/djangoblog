@@ -1,4 +1,4 @@
-{% load static %}
+﻿{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,9 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-        {% block title %}DjangoBlog{% endblock %}
-    </title>
+    <title>{% block title %}DjangoBlog{% endblock %}</title>
 
     <style>
         * {
@@ -17,13 +15,7 @@
 
         body {
             margin: 0;
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Arial,
-                sans-serif;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
             background: #f5f7fb;
             color: #1f2937;
         }
@@ -33,11 +25,7 @@
         }
 
         .navbar {
-            background: linear-gradient(
-                135deg,
-                #111827,
-                #1f2937
-            );
+            background: linear-gradient(135deg, #111827, #1f2937);
             padding: 16px 0;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
         }
@@ -46,11 +34,9 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
-
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             gap: 20px;
         }
 
@@ -58,7 +44,6 @@
             color: white;
             font-size: 1.35rem;
             font-weight: 800;
-            letter-spacing: 0.3px;
         }
 
         .navbar-brand:hover {
@@ -73,14 +58,10 @@
 
         .btn {
             display: inline-block;
-
             padding: 9px 16px;
-
             border-radius: 8px;
-
             font-size: 0.9rem;
             font-weight: 600;
-
             transition: 0.2s ease;
         }
 
@@ -90,9 +71,7 @@
 
         .btn-outline-light {
             color: white;
-
             border: 1px solid rgba(255, 255, 255, 0.5);
-
             background: transparent;
         }
 
@@ -103,15 +82,12 @@
 
         .btn-primary {
             color: white;
-
             background: #2563eb;
-
             border: 1px solid #2563eb;
         }
 
         .btn-primary:hover {
             background: #1d4ed8;
-            border-color: #1d4ed8;
         }
 
         main {
@@ -120,52 +96,38 @@
 
         footer {
             margin-top: 60px;
-
             background: #111827;
-
             color: #9ca3af;
         }
 
         .footer-container {
             max-width: 1200px;
-
             margin: 0 auto;
-
             padding: 35px 20px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
             gap: 20px;
         }
 
         .footer-title {
             color: white;
-
             font-weight: 700;
-
             margin-bottom: 6px;
         }
 
         .footer-text {
             margin: 0;
-
             font-size: 0.9rem;
         }
 
         .footer-links {
             display: flex;
-
             gap: 18px;
         }
 
         .footer-links a {
             color: #9ca3af;
-
-            transition: 0.2s ease;
         }
 
         .footer-links a:hover {
@@ -173,10 +135,8 @@
         }
 
         @media (max-width: 768px) {
-
             .navbar-container {
                 flex-direction: column;
-
                 align-items: stretch;
             }
 
@@ -190,26 +150,17 @@
 
             .footer-container {
                 flex-direction: column;
-
                 text-align: center;
-            }
-
-            .footer-links {
-                justify-content: center;
-
-                flex-wrap: wrap;
             }
         }
 
         @media (max-width: 480px) {
-
             .navbar-buttons {
                 flex-direction: column;
             }
 
             .navbar-buttons .btn {
                 width: 100%;
-
                 text-align: center;
             }
         }
@@ -218,84 +169,62 @@
 
 <body>
 
-    <nav class="navbar">
+<nav class="navbar">
+    <div class="navbar-container">
 
-        <div class="navbar-container">
+        <a class="navbar-brand" href="{% url 'blog:home' %}">
+            笨ｨ DjangoBlog
+        </a>
 
-            <a
-                class="navbar-brand"
-                href="{% url 'blog:home' %}"
-            >
-                ✨ DjangoBlog
+        <div class="navbar-buttons">
+
+            <a class="btn btn-outline-light" href="{% url 'blog:home' %}">
+                Home
             </a>
 
-            <div class="navbar-buttons">
-
-                <a
-                    class="btn btn-outline-light"
-                    href="{% url 'blog:home' %}"
-                >
-                    Home
-                </a>
-
-                <a
-                    class="btn btn-primary"
-                    href="{% url 'blog:post_create' %}"
-                >
-                    + New Post
-                </a>
-
-            </div>
+            <a class="btn btn-primary" href="{% url 'blog:post_create' %}">
+                + New Post
+            </a>
 
         </div>
+    </div>
+</nav>
 
-    </nav>
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
 
+<footer>
+    <div class="footer-container">
 
-    <main>
-
-        {% block content %}
-        {% endblock %}
-
-    </main>
-
-
-    <footer>
-
-        <div class="footer-container">
-
-            <div>
-
-                <div class="footer-title">
-                    ✨ DjangoBlog
-                </div>
-
-                <p class="footer-text">
-                    Simple blog built with Django & PostgreSQL.
-                </p>
-
+        <div>
+            <div class="footer-title">
+                笨ｨ DjangoBlog
             </div>
 
-
-            <div class="footer-links">
-
-                <a href="{% url 'blog:home' %}">
-                    Home
-                </a>
-
-                <a href="{% url 'blog:about' %}">
-                    About
-                </a>
-
-                <a href="{% url 'blog:contact' %}">
-                    Contact
-                </a>
-
-            </div>
-
+            <p class="footer-text">
+                Simple blog built with Django & PostgreSQL.
+            </p>
         </div>
 
-    </footer>
+        <div class="footer-links">
+
+            <a href="{% url 'blog:home' %}">
+                Home
+            </a>
+
+            <a href="{% url 'blog:about' %}">
+                About
+            </a>
+
+            <a href="{% url 'blog:contact' %}">
+                Contact
+            </a>
+
+        </div>
+    </div>
+</footer>
 
 </body>
 </html>

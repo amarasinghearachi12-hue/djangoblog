@@ -1,31 +1,91 @@
 from django.db import models
 from django.urls import reverse
-from django.utils import timezone
+from django.utils.text import slugify
+
+
+class Category(models.Model):
+    name = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Tag(models.Model):
+    name = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.name
 
 
 class Post(models.Model):
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=220, unique=True)
-    excerpt = models.TextField(max_length=300, blank=True)
+
+    STATUS_CHOICES = [
+        ("draft", "Draft"),
+        ("published", "Published"),
+    ]
+
+    title = models.CharField(
+        max_length=200
+    )
+
+    slug = models.SlugField(
+        unique=True,
+        blank=True
+    )
+
     content = models.TextField()
-    author = models.CharField(max_length=120, default="Equipe do blog")
-    is_published = models.BooleanField(default=False)
-    published_at = models.DateTimeField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        ordering = ["-published_at", "-created_at"]
+    # Cover image for the blog post
+    cover_image = models.ImageField(
+        upload_to="post_covers/",
+        blank=True,
+        null=True
+    )
 
-    def __str__(self):
-        return self.title
+    tags = models.ManyToManyField(
+        Tag,
+        blank=True
+    )
+
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name="posts",
+        null=True,
+        blank=True
+    )
+
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default="published"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
 
     def save(self, *args, **kwargs):
-        if self.is_published and self.published_at is None:
-            self.published_at = timezone.now()
-        elif not self.is_published:
-            self.published_at = None
+        if not self.slug:
+            self.slug = slugify(self.title)
+
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("blog:post_detail", kwargs={"slug": self.slug})
+        return reverse(
+            "blog:post_detail",
+            kwargs={"slug": self.slug}
+        )
+
+    def __str__(self):
+        return self.title

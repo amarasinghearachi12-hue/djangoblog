@@ -1,4 +1,795 @@
-{% block content %}
-<p>{{ ABC }}</p>
-<p>This is a simple blog application built with Django.</p>
-{% endblock content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Contact | LankaVibe</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7f7f3;
+            color: #222;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            background: #073b3a;
+            color: white;
+            padding: 18px 6%;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #f4c542;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: #f4c542;
+        }
+
+        /* HERO */
+
+        .hero {
+            height: 430px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+            color: white;
+
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.45),
+                    rgba(0, 0, 0, 0.45)
+                ),
+                url("https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1800&q=85");
+
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 30px;
+        }
+
+        .hero h1 {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            line-height: 1.6;
+        }
+
+        /* MAIN */
+
+        .container {
+            width: 88%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .section {
+            padding: 75px 0;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 45px;
+            align-items: stretch;
+        }
+
+        /* CONTACT INFO */
+
+        .contact-info {
+            background: #073b3a;
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+        }
+
+        .contact-info h2 {
+            font-size: 34px;
+            margin-bottom: 18px;
+        }
+
+        .contact-info > p {
+            color: #d8e3df;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .info-icon {
+            font-size: 27px;
+            min-width: 35px;
+        }
+
+        .info-item h3 {
+            color: #f4c542;
+            margin-bottom: 5px;
+        }
+
+        .info-item p {
+            color: #d8e3df;
+            line-height: 1.5;
+        }
+
+        /* FORM */
+
+        .contact-form {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+
+            box-shadow:
+                0 5px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .contact-form h2 {
+            color: #073b3a;
+            font-size: 34px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+
+            color: #073b3a;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+
+            padding: 14px 15px;
+
+            border: 1px solid #ddd;
+            border-radius: 10px;
+
+            font-family: inherit;
+            font-size: 15px;
+
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #073b3a;
+
+            box-shadow:
+                0 0 0 3px rgba(7, 59, 58, 0.08);
+        }
+
+        .form-group textarea {
+            min-height: 160px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            border: none;
+
+            background: #f4c542;
+            color: #073b3a;
+
+            padding: 14px 30px;
+
+            border-radius: 30px;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #073b3a;
+            color: white;
+
+            transform: translateY(-2px);
+        }
+
+        /* MESSAGE */
+
+        .success-message {
+            display: none;
+
+            margin-top: 20px;
+            padding: 15px;
+
+            background: #e8f5e9;
+            color: #216e39;
+
+            border-radius: 10px;
+        }
+
+        /* CTA */
+
+        .cta {
+            margin: 20px 0 70px;
+
+            padding: 70px 30px;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    rgba(7, 59, 58, 0.9),
+                    rgba(7, 59, 58, 0.9)
+                ),
+                url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=85");
+
+            background-size: cover;
+            background-position: center;
+
+            text-align: center;
+            color: white;
+        }
+
+        .cta h2 {
+            font-size: 38px;
+            margin-bottom: 15px;
+        }
+
+        .cta p {
+            margin-bottom: 25px;
+            color: #ddd;
+        }
+
+        .cta-btn {
+            display: inline-block;
+
+            background: #f4c542;
+            color: #073b3a;
+
+            padding: 14px 30px;
+
+            border-radius: 30px;
+
+            font-weight: bold;
+        }
+
+        .cta-btn:hover {
+            background: white;
+        }
+
+        /* FOOTER */
+
+        footer {
+            background: #052f2e;
+            color: white;
+
+            padding: 45px 6% 20px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-logo {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        footer h3 {
+            color: #f4c542;
+            margin-bottom: 15px;
+        }
+
+        footer p,
+        footer a {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+
+        .copyright {
+            text-align: center;
+
+            border-top:
+                1px solid rgba(255,255,255,0.15);
+
+            margin-top: 35px;
+            padding-top: 20px;
+
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 850px) {
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+            }
+
+            .hero {
+                height: 400px;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .hero p {
+                font-size: 17px;
+            }
+
+            .contact-info,
+            .contact-form {
+                padding: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <a href="{% url 'blog:home' %}" class="logo">
+        Lanka<span>Vibe</span>
+    </a>
+
+    <ul class="nav-links">
+
+        <li>
+            <a href="{% url 'blog:home' %}">
+                Home
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'blog:about' %}">
+                About
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'blog:contact' %}">
+                Contact
+            </a>
+        </li>
+
+    </ul>
+
+</nav>
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <h1>
+            Contact Us 📩
+        </h1>
+
+        <p>
+            Have a question, suggestion or just want
+            to say hello? We'd love to hear from you.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- CONTACT -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="contact-grid">
+
+            <!-- CONTACT INFO -->
+
+            <div class="contact-info">
+
+                <h2>
+                    Let's Connect 🌴
+                </h2>
+
+                <p>
+                    Whether you want to know more about
+                    Sri Lanka or have an idea for LankaVibe,
+                    feel free to contact us.
+                </p>
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        📍
+                    </div>
+
+                    <div>
+                        <h3>
+                            Location
+                        </h3>
+
+                        <p>
+                            Sri Lanka 🇱🇰
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        📧
+                    </div>
+
+                    <div>
+                        <h3>
+                            Email
+                        </h3>
+
+                        <p>
+                            hello@lankavibe.com
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        🌐
+                    </div>
+
+                    <div>
+                        <h3>
+                            Website
+                        </h3>
+
+                        <p>
+                            LankaVibe
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        ❤️
+                    </div>
+
+                    <div>
+                        <h3>
+                            Our Mission
+                        </h3>
+
+                        <p>
+                            Share the beauty of Sri Lanka
+                            with the world.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FORM -->
+
+            <div class="contact-form">
+
+                <h2>
+                    Send Us a Message 💬
+                </h2>
+
+                <form id="contactForm">
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Your Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            placeholder="Enter your name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="subject">
+                            Subject
+                        </label>
+
+                        <input
+                            type="text"
+                            id="subject"
+                            placeholder="What is your message about?"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="message">
+                            Message
+                        </label>
+
+                        <textarea
+                            id="message"
+                            placeholder="Write your message here..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="submit-btn"
+                    >
+                        Send Message 📩
+                    </button>
+
+
+                    <div
+                        class="success-message"
+                        id="successMessage"
+                    >
+                        ✅ Thank you! Your message has been received.
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CTA -->
+
+<section class="container">
+
+    <div class="cta">
+
+        <h2>
+            Keep Exploring Sri Lanka 🇱🇰
+        </h2>
+
+        <p>
+            Discover beautiful places, delicious food,
+            amazing wildlife and rich culture.
+        </p>
+
+        <a
+            href="{% url 'blog:home' %}"
+            class="cta-btn"
+        >
+            Back to LankaVibe
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <div class="footer-content">
+
+        <div>
+
+            <div class="footer-logo">
+                LankaVibe 🇱🇰
+            </div>
+
+            <p>
+                Discover Sri Lanka through food,
+                beautiful places, nature and culture.
+            </p>
+
+        </div>
+
+
+        <div>
+
+            <h3>
+                Explore
+            </h3>
+
+            <ul class="footer-links">
+
+                <li>
+                    <a href="{% url 'blog:home' %}">
+                        Home
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{% url 'blog:about' %}">
+                        About
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <div>
+
+            <h3>
+                LankaVibe
+            </h3>
+
+            <ul class="footer-links">
+
+                <li>
+                    <a href="{% url 'blog:contact' %}">
+                        Contact
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+
+    <div class="copyright">
+
+        © 2026 LankaVibe. Made with ❤️ in Sri Lanka 🇱🇰
+
+    </div>
+
+</footer>
+
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+    document
+        .getElementById("contactForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            document
+                .getElementById("successMessage")
+                .style.display = "block";
+
+            this.reset();
+
+        });
+
+</script>
+
+</body>
+
+</html>
