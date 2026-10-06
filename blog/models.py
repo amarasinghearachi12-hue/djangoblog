@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-
+from PIL import Image
 
 class Category(models.Model):
     name = models.CharField(
@@ -74,18 +74,17 @@ class Post(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True
     )
+def save(self, *args, **kwargs):
+    if not self.slug:
+        self.slug = slugify(self.title)
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)
+    super().save(*args, **kwargs)
 
-        super().save(*args, **kwargs)
+    if self.cover_image:
+        img_path = self.cover_image.path
+        img = Image.open(img_path)
 
-    def get_absolute_url(self):
-        return reverse(
-            "blog:post_detail",
-            kwargs={"slug": self.slug}
-        )
-
-    def __str__(self):
-        return self.title
+        if img.height > 800 or img.width > 800:
+            img.thumbnail((800, 800))
+            img.save(img_path)
+    
