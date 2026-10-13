@@ -138,6 +138,14 @@ LOGIN_REDIRECT_URL = "blog:home"
 LOGOUT_REDIRECT_URL = "blog:home"
 LOGIN_URL = "/login/"
 
+
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.ERROR: "danger",
+}
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

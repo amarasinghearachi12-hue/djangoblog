@@ -1,40 +1,23 @@
-{% load static %}
 
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        {% block title %}DjangoBlog{% endblock %}
-    </title>
+    <title>{% block title %}DjangoBlog{% endblock %}</title>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Arial,
-                sans-serif;
-
+            font-family: Inter, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", Arial, sans-serif;
             background: #f5f7fb;
-
             color: #1f2937;
         }
 
@@ -42,530 +25,386 @@
             text-decoration: none;
         }
 
-
-        /* =========================
-           NAVBAR
-        ========================= */
-
+        /* NAVBAR */
         .navbar {
-            background: linear-gradient(
-                135deg,
-                #111827,
-                #1f2937
-            );
-
+            background: linear-gradient(135deg, #111827, #1f2937);
             padding: 16px 0;
-
-            box-shadow:
-                0 4px 20px rgba(0, 0, 0, 0.12);
-
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
 
-
         .navbar-container {
             max-width: 1200px;
-
             margin: 0 auto;
-
             padding: 0 20px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
             gap: 20px;
         }
 
-
-        /* =========================
-           BRAND
-        ========================= */
-
         .navbar-brand {
             color: white;
-
             font-size: 1.35rem;
-
             font-weight: 800;
-
             letter-spacing: 0.3px;
-
             white-space: nowrap;
         }
-
 
         .navbar-brand:hover {
             color: #93c5fd;
         }
 
-
-        /* =========================
-           NAVIGATION BUTTONS
-        ========================= */
-
         .navbar-buttons {
             display: flex;
-
             align-items: center;
-
             gap: 10px;
-
             flex-wrap: wrap;
         }
 
-
-        /* =========================
-           BUTTON
-        ========================= */
-
+        /* BUTTONS */
         .btn {
             display: inline-block;
-
             padding: 9px 16px;
-
             border-radius: 8px;
-
             font-size: 0.9rem;
-
             font-weight: 600;
-
             transition: all 0.2s ease;
-
             cursor: pointer;
+            text-align: center;
         }
-
 
         .btn:hover {
             transform: translateY(-1px);
         }
 
-
-        /* =========================
-           OUTLINE BUTTON
-        ========================= */
-
         .btn-outline-light {
             color: white;
-
-            border: 1px solid
-                rgba(255, 255, 255, 0.5);
-
+            border: 1px solid rgba(255, 255, 255, 0.5);
             background: transparent;
         }
 
-
         .btn-outline-light:hover {
             background: white;
-
             color: #111827;
         }
 
-
-        /* =========================
-           PRIMARY BUTTON
-        ========================= */
-
         .btn-primary {
             color: white;
-
             background: #2563eb;
-
             border: 1px solid #2563eb;
         }
 
-
         .btn-primary:hover {
             background: #1d4ed8;
-
             border-color: #1d4ed8;
         }
 
-
-        /* =========================
-           DANGER BUTTON
-        ========================= */
-
         .btn-danger {
             color: white;
-
             background: #dc2626;
-
             border: 1px solid #dc2626;
         }
 
-
         .btn-danger:hover {
             background: #b91c1c;
-
             border-color: #b91c1c;
         }
 
-
-        /* =========================
-           USER NAME
-        ========================= */
-
         .user-greeting {
             color: white;
-
             font-size: 0.9rem;
-
             font-weight: 600;
-
             padding: 9px 5px;
         }
-
-
-        /* =========================
-           LOGOUT FORM
-        ========================= */
 
         .logout-form {
             display: inline;
             margin: 0;
         }
 
-
         .logout-form button {
-            border: 0;
-
             font-family: inherit;
         }
 
-
-        /* =========================
-           MAIN
-        ========================= */
-
-        main {
-            min-height:
-                calc(100vh - 150px);
+        /* FLASH MESSAGES */
+        .messages-container {
+            max-width: 1160px;
+            margin: 20px auto 0;
+            padding: 0 20px;
         }
 
+        .alert {
+            position: relative;
+            padding: 15px 45px 15px 18px;
+            margin-bottom: 12px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+        }
 
-        /* =========================
-           FOOTER
-        ========================= */
+        .alert-success {
+            color: #166534;
+            background: #dcfce7;
+            border-color: #86efac;
+        }
 
+        .alert-danger {
+            color: #991b1b;
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+
+        .alert-error {
+            color: #991b1b;
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+
+        .alert-warning {
+            color: #92400e;
+            background: #fef3c7;
+            border-color: #fcd34d;
+        }
+
+        .alert-info {
+            color: #1e40af;
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .alert-close {
+            position: absolute;
+            top: 7px;
+            right: 12px;
+            border: none;
+            background: transparent;
+            color: inherit;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .alert-close:hover {
+            opacity: 1;
+        }
+
+        /* MAIN */
+        main {
+            min-height: calc(100vh - 150px);
+        }
+
+        /* FOOTER */
         footer {
             margin-top: 60px;
-
             background: #111827;
-
             color: #9ca3af;
         }
-
 
         .footer-container {
             max-width: 1200px;
-
             margin: 0 auto;
-
             padding: 35px 20px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
             gap: 20px;
         }
 
-
         .footer-title {
             color: white;
-
             font-weight: 700;
-
             margin-bottom: 6px;
         }
 
-
         .footer-text {
             margin: 0;
-
             font-size: 0.9rem;
         }
 
-
         .footer-links {
             display: flex;
-
             gap: 18px;
         }
 
-
         .footer-links a {
             color: #9ca3af;
-
             transition: 0.2s ease;
         }
-
 
         .footer-links a:hover {
             color: white;
         }
 
-
-        /* =========================
-           MOBILE
-        ========================= */
-
+        /* MOBILE */
         @media (max-width: 768px) {
-
             .navbar-container {
                 flex-direction: column;
-
                 align-items: stretch;
             }
-
 
             .navbar-brand {
                 text-align: center;
             }
 
-
             .navbar-buttons {
                 justify-content: center;
             }
-
 
             .footer-container {
                 flex-direction: column;
-
                 text-align: center;
             }
 
-
             .footer-links {
                 justify-content: center;
-
                 flex-wrap: wrap;
             }
-
         }
 
-
         @media (max-width: 480px) {
-
             .navbar-buttons {
                 flex-direction: column;
-
                 width: 100%;
             }
-
 
             .navbar-buttons .btn,
             .navbar-buttons .logout-form,
             .navbar-buttons .logout-form button {
-
                 width: 100%;
-
                 text-align: center;
             }
-
 
             .user-greeting {
                 text-align: center;
-
                 width: 100%;
             }
-
         }
-
     </style>
-
 </head>
-
 
 <body>
 
-
-    <!-- =========================
-         NAVBAR
-    ========================= -->
-
+    <!-- NAVBAR -->
     <nav class="navbar">
-
         <div class="navbar-container">
 
-
-            <!-- LOGO -->
-
-            <a
-                class="navbar-brand"
-                href="{% url 'blog:home' %}"
-            >
+            <a class="navbar-brand" href="{% url 'blog:home' %}">
                 ✨ DjangoBlog
             </a>
 
-
-            <!-- NAVIGATION -->
-
             <div class="navbar-buttons">
 
-
-                <!-- HOME -->
-
-                <a
-                    class="btn btn-outline-light"
-                    href="{% url 'blog:home' %}"
-                >
+                <a class="btn btn-outline-light"
+                   href="{% url 'blog:home' %}">
                     Home
                 </a>
 
-
                 {% if user.is_authenticated %}
 
-
-                    <!-- NEW POST -->
-
-                    <a
-                        class="btn btn-primary"
-                        href="{% url 'blog:post_create' %}"
-                    >
+                    <a class="btn btn-primary"
+                       href="{% url 'blog:post_create' %}">
                         + New Post
                     </a>
 
-
-                    <!-- USER NAME -->
+                    <a class="btn btn-outline-light"
+                       href="{% url 'blog:my_posts' %}">
+                        My Posts
+                    </a>
 
                     <span class="user-greeting">
-
-                        Hi,
-                        {{ user.username }}
-
+                        Hi, {{ user.username }}
                     </span>
 
-
-                    <!-- LOGOUT -->
-
-                    <form
-                        method="post"
-                        action="{% url 'logout' %}"
-                        class="logout-form"
-                    >
-
+                    <form method="post"
+                          action="{% url 'logout' %}"
+                          class="logout-form">
                         {% csrf_token %}
-
-                        <button
-                            type="submit"
-                            class="btn btn-danger"
-                        >
+                        <button type="submit" class="btn btn-danger">
                             Logout
                         </button>
-
                     </form>
-
 
                 {% else %}
 
-
-                    <!-- LOGIN -->
-
-                    <a
-                        class="btn btn-outline-light"
-                        href="{% url 'login' %}"
-                    >
+                    <a class="btn btn-outline-light"
+                       href="{% url 'login' %}">
                         Login
                     </a>
 
-
-                    <!-- REGISTER -->
-
-                    <a
-                        class="btn btn-primary"
-                        href="{% url 'blog:register' %}"
-                    >
+                    <a class="btn btn-primary"
+                       href="{% url 'blog:register' %}">
                         Register
                     </a>
 
-
                 {% endif %}
 
-
             </div>
-
         </div>
-
     </nav>
 
+    <!-- FLASH MESSAGES -->
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                     role="alert">
 
+                    {{ message }}
 
-    <!-- =========================
-         MAIN CONTENT
-    ========================= -->
+                    <button type="button"
+                            class="alert-close"
+                            aria-label="Close"
+                            onclick="this.parentElement.remove()">
+                        &times;
+                    </button>
 
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- MAIN CONTENT -->
     <main>
-
         {% block content %}
-
         {% endblock %}
-
     </main>
 
-
-
-    <!-- =========================
-         FOOTER
-    ========================= -->
-
+    <!-- FOOTER -->
     <footer>
-
         <div class="footer-container">
 
-
             <div>
-
                 <div class="footer-title">
                     ✨ DjangoBlog
                 </div>
 
-
                 <p class="footer-text">
                     Simple blog built with Django & PostgreSQL.
                 </p>
-
             </div>
-
 
             <div class="footer-links">
 
-
-                <a
-                    href="{% url 'blog:home' %}"
-                >
+                <a href="{% url 'blog:home' %}">
                     Home
                 </a>
 
-
-                <a
-                    href="{% url 'blog:about' %}"
-                >
+                <a href="{% url 'blog:about' %}">
                     About
                 </a>
 
-
-                <a
-                    href="{% url 'blog:contact' %}"
-                >
+                <a href="{% url 'blog:contact' %}">
                     Contact
                 </a>
 
-
             </div>
-
         </div>
-
     </footer>
 
-
 </body>
-
 </html>

@@ -5,6 +5,7 @@ from PIL import Image
 from django.conf import settings
 
 
+
 class Category(models.Model):
 
     name = models.CharField(

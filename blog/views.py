@@ -2,6 +2,8 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib.auth import login
+from django.contrib import messages
+from django.db import models
 
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
@@ -24,19 +26,14 @@ from .forms import PostForm, UserRegisterForm
 # Register
 # =========================================================
 
-
 class RegisterView(CreateView):
-
     form_class = UserRegisterForm
     template_name = "blog/register.html"
     success_url = reverse_lazy("blog:home")
 
     def form_valid(self, form):
-
         response = super().form_valid(form)
-
         login(self.request, self.object)
-
         return response
 
 
@@ -45,68 +42,65 @@ class RegisterView(CreateView):
 # =========================================================
 
 class PostListView(ListView):
-
     model = Post
     template_name = "blog/post_list.html"
     context_object_name = "posts"
     paginate_by = 6
 
     def get_queryset(self):
-
         return Post.objects.filter(
             status="published"
         ).order_by("-created_at")
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
-
         context["categories"] = Category.objects.all()
-
         return context
 
 
 # =========================================================
 # Post Detail
+# Published posts are public; drafts are visible only to their author
 # =========================================================
 
 class PostDetailView(DetailView):
-
     model = Post
     template_name = "blog/post_detail.html"
     context_object_name = "post"
 
     def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Post.objects.filter(
+                models.Q(status="published")
+                | models.Q(author=self.request.user)
+            )
 
-        return Post.objects.filter(
-            status="published"
-        )
+        return Post.objects.filter(status="published")
 
 
 # =========================================================
 # Create Post
 # =========================================================
 
-class PostCreateView(
-    LoginRequiredMixin,
-    CreateView
-):
-
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = "blog/post_form.html"
-
     login_url = "login"
 
     def form_valid(self, form):
-
-        # Automatically set the logged-in user as author
         form.instance.author = self.request.user
 
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        messages.success(
+            self.request,
+            "Post created successfully!"
+        )
+
+        return response
 
     def get_success_url(self):
-
         return self.object.get_absolute_url()
 
 
@@ -119,24 +113,26 @@ class PostUpdateView(
     UserPassesTestMixin,
     UpdateView
 ):
-
     model = Post
     form_class = PostForm
     template_name = "blog/post_form.html"
-
     login_url = "login"
 
     def test_func(self):
-
-        # Only the author can update the post
-        return (
-            self.get_object().author
-            == self.request.user
-        )
+        return self.get_object().author == self.request.user
 
     def get_success_url(self):
-
         return self.object.get_absolute_url()
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        messages.success(
+            self.request,
+            "Post updated successfully!"
+        )
+
+        return response
 
 
 # =========================================================
@@ -148,23 +144,21 @@ class PostDeleteView(
     UserPassesTestMixin,
     DeleteView
 ):
-
     model = Post
     template_name = "blog/post_confirm_delete.html"
-
     login_url = "login"
-
-    success_url = reverse_lazy(
-        "blog:home"
-    )
+    success_url = reverse_lazy("blog:home")
 
     def test_func(self):
+        return self.get_object().author == self.request.user
 
-        # Only the author can delete the post
-        return (
-            self.get_object().author
-            == self.request.user
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Post deleted successfully!"
         )
+
+        return super().form_valid(form)
 
 
 # =========================================================
@@ -172,13 +166,10 @@ class PostDeleteView(
 # =========================================================
 
 def about(request):
-
     return render(
         request,
         "blog/about.html",
-        {
-            "team": "DjangoBlog Team"
-        },
+        {"team": "DjangoBlog Team"},
     )
 
 
@@ -187,11 +178,7 @@ def about(request):
 # =========================================================
 
 def contact(request):
-
-    return render(
-        request,
-        "blog/contact.html",
-    )
+    return render(request, "blog/contact.html")
 
 
 # =========================================================
@@ -199,16 +186,12 @@ def contact(request):
 # =========================================================
 
 class CategoryPostListView(ListView):
-
     model = Post
     template_name = "blog/category_posts.html"
-
     context_object_name = "posts"
-
     paginate_by = 6
 
     def get_queryset(self):
-
         self.category = get_object_or_404(
             Category,
             name__iexact=self.kwargs["category_name"]
@@ -220,13 +203,9 @@ class CategoryPostListView(ListView):
         ).order_by("-created_at")
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
-
         context["category"] = self.category
-
         context["categories"] = Category.objects.all()
-
         return context
 
 
@@ -234,24 +213,32 @@ class CategoryPostListView(ListView):
 # My Posts Dashboard
 # =========================================================
 
-class MyPostsView(
-    LoginRequiredMixin,
-    ListView
-):
-
+class MyPostsView(LoginRequiredMixin, ListView):
     model = Post
-
     template_name = "blog/my_posts.html"
-
     context_object_name = "posts"
-
     paginate_by = 6
-
     login_url = "login"
 
     def get_queryset(self):
-
         return Post.objects.filter(
             author=self.request.user
         ).order_by("-created_at")
 
+
+# =========================================================
+# Custom 403 Forbidden Page
+# IMPORTANT: This function must be outside all classes.
+# =========================================================
+
+def custom_403(request, exception):
+    messages.error(
+        request,
+        "You are not the owner of this post."
+    )
+
+    return render(
+        request,
+        "blog/403.html",
+        status=403
+    )
