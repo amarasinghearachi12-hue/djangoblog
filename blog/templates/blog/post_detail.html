@@ -1,195 +1,933 @@
 {% extends "blog/base.html" %}
 
 {% block title %}
-{{ post.title }} - DjangoBlog
+    {{ post.title }} | Sri Lanka
 {% endblock %}
-
 
 {% block content %}
 
-<div class="container">
+<!-- =========================
+     HERO IMAGE
+========================= -->
 
-    <!-- =========================
-         POST
-    ========================= -->
+<section class="food-detail-hero">
 
-    <article class="card">
+    {% if post.cover_image %}
 
-        <!-- Cover Image -->
+        <img
+            src="{{ post.cover_image.url }}"
+            alt="{{ post.title }}"
+            class="food-hero-image"
+        >
 
-        {% if post.cover_image %}
+    {% else %}
 
-            <img
-                src="{{ post.cover_image.url }}"
-                alt="{{ post.title }}"
-                style="
-                    width: 100%;
-                    max-height: 500px;
-                    object-fit: cover;
-                    border-radius: 12px;
-                    margin-bottom: 30px;
-                "
-            >
+        <div class="food-hero-placeholder">
+            🍛
+        </div>
 
-        {% endif %}
+    {% endif %}
 
+    <div class="food-hero-overlay"></div>
 
-        <!-- Category -->
+    <div class="food-hero-content">
 
         {% if post.category %}
 
-            <div style="margin-bottom: 15px;">
-
-                <span
-                    style="
-                        display: inline-block;
-                        padding: 6px 12px;
-                        border-radius: 20px;
-                        background: #eff6ff;
-                        color: #2563eb;
-                        font-size: 0.85rem;
-                        font-weight: 700;
-                    "
-                >
-                    {{ post.category.name }}
-                </span>
-
+            <div class="food-category">
+                {{ post.category.name|upper }}
             </div>
 
         {% endif %}
 
-
-        <!-- Title -->
-
-        <h1
-            style="
-                font-size: clamp(2rem, 5vw, 3.2rem);
-                line-height: 1.2;
-                margin: 0 0 15px;
-                color: #111827;
-            "
-        >
+        <h1>
             {{ post.title }}
         </h1>
 
+        <div class="food-meta">
 
-        <!-- Date -->
+            <span>
+                🇱🇰 Sri Lanka
+            </span>
 
-        <div
-            style="
-                color: #9ca3af;
-                margin-bottom: 25px;
-            "
-        >
-            Published on
-            {{ post.created_at|date:"F d, Y" }}
+            <span>•</span>
+
+            <span>
+                {{ post.created_at|date:"F d, Y" }}
+            </span>
+
+            <span>•</span>
+
+            <span>
+                By {{ post.author.username }}
+            </span>
+
         </div>
 
+    </div>
 
-        <!-- Tags -->
+</section>
 
-        {% if post.tags.all %}
 
-            <div
-                style="
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 7px;
-                    margin-bottom: 30px;
-                "
-            >
+<!-- =========================
+     ARTICLE
+========================= -->
 
-                {% for tag in post.tags.all %}
+<section class="food-article-section">
 
-                    <span
-                        style="
-                            padding: 5px 10px;
-                            border-radius: 15px;
-                            background: #f3f4f6;
-                            color: #4b5563;
-                            font-size: 0.8rem;
-                        "
-                    >
-                        #{{ tag.name }}
-                    </span>
+    <div class="food-container">
 
-                {% endfor %}
+        <!-- MAIN ARTICLE -->
+
+        <article class="food-article">
+
+            <!-- INTRO -->
+
+            <div class="food-intro">
+
+                <span class="intro-label">
+                    SRI LANKAN FOOD
+                </span>
+
+                <h2>
+                    Discover the taste of Sri Lanka
+                </h2>
 
             </div>
 
-        {% endif %}
+
+            <!-- CONTENT -->
+
+            <div class="food-content">
+
+                {{ post.content|linebreaks }}
+
+            </div>
 
 
-        <!-- Content -->
+            <!-- TAGS -->
 
-        <div
-            style="
-                font-size: 1.05rem;
-                line-height: 1.9;
-                color: #374151;
-                white-space: pre-line;
-            "
-        >
-            {{ post.content }}
-        </div>
+            {% if post.tags.all %}
+
+            <div class="food-tags">
+
+                <h4>
+                    Tags
+                </h4>
+
+                <div class="tag-list">
+
+                    {% for tag in post.tags.all %}
+
+                        <span class="food-tag">
+                            #{{ tag.name }}
+                        </span>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- =========================
+                 ACTIONS
+            ========================= -->
+
+            <div class="food-actions">
+
+                <!-- BACK -->
+
+                <a
+                    href="{% url 'blog:home' %}"
+                    class="back-button"
+                >
+                    ← Back to Home
+                </a>
+
+
+                <!-- CATEGORY -->
+
+                {% if post.category %}
+
+                    <a
+                        href="{% url 'blog:category_posts' post.category.name %}"
+                        class="category-button"
+                    >
+                        Explore {{ post.category.name }} →
+                    </a>
+
+                {% endif %}
+
+
+                <!-- =================================
+                     EDIT / DELETE
+                     OWNER ONLY
+                ================================= -->
+
+                {% if post.author == request.user %}
+
+                    <a
+                        href="{% url 'blog:post_update' post.slug %}"
+                        class="edit-button"
+                    >
+                        ✏️ Edit
+                    </a>
+
+                    <a
+                        href="{% url 'blog:post_delete' post.slug %}"
+                        class="delete-button"
+                    >
+                        🗑️ Delete
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </article>
 
 
         <!-- =========================
-             ACTION BUTTONS
+             SIDEBAR
         ========================= -->
 
-        <div
-            style="
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                margin-top: 35px;
-                padding-top: 25px;
-                border-top: 1px solid #e5e7eb;
-            "
-        >
+        <aside class="food-sidebar">
 
-            <!-- Home -->
+            <div class="sidebar-card">
 
-            <a
-                href="{% url 'blog:home' %}"
-                class="btn"
-                style="
-                    background: #f3f4f6;
-                    color: #111827;
-                "
-            >
-                ← Back to Home
-            </a>
+                <div class="sidebar-icon">
+                    🍛
+                </div>
+
+                <h3>
+                    Taste Sri Lanka
+                </h3>
+
+                <p>
+                    Discover traditional Sri Lankan
+                    dishes, spices and unforgettable
+                    flavours.
+                </p>
+
+            </div>
 
 
-            <!-- Edit -->
+            {% if post.category %}
 
-            <a
-                href="{% url 'blog:post_update' post.slug %}"
-                class="btn btn-primary"
-            >
-                ✏️ Edit Post
-            </a>
+            <div class="sidebar-card small-card">
+
+                <span class="sidebar-label">
+                    CATEGORY
+                </span>
+
+                <h4>
+                    {{ post.category.name }}
+                </h4>
+
+                <a
+                    href="{% url 'blog:category_posts' post.category.name %}"
+                >
+                    View all →
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </aside>
+
+    </div>
+
+</section>
 
 
-            <!-- Delete -->
+<!-- =========================
+     CSS
+========================= -->
 
-            <a
-                href="{% url 'blog:post_delete' post.slug %}"
-                class="btn"
-                style="
-                    background: #dc2626;
-                    color: white;
-                "
-            >
-                🗑️ Delete Post
-            </a>
+<style>
 
-        </div>
+/* =========================
+   HERO
+========================= */
 
-    </article>
+.food-detail-hero {
 
-</div>
+    position: relative;
+
+    height: 65vh;
+
+    min-height: 480px;
+
+    overflow: hidden;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #92400e,
+            #f59e0b
+        );
+}
+
+
+.food-hero-image {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    object-position: center;
+}
+
+
+.food-hero-placeholder {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 8rem;
+
+    background:
+        linear-gradient(
+            135deg,
+            #92400e,
+            #f59e0b
+        );
+}
+
+
+.food-hero-overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,.05),
+            rgba(0,0,0,.25),
+            rgba(0,0,0,.85)
+        );
+}
+
+
+.food-hero-content {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+
+    max-width: 1100px;
+
+    padding: 50px 25px;
+
+    color: white;
+
+    text-align: left;
+}
+
+
+.food-category {
+
+    display: inline-block;
+
+    padding: 8px 16px;
+
+    margin-bottom: 18px;
+
+    background:
+        rgba(255,255,255,.15);
+
+    border:
+        1px solid
+        rgba(255,255,255,.35);
+
+    border-radius: 30px;
+
+    font-size: .75rem;
+
+    font-weight: 800;
+
+    letter-spacing: 3px;
+
+    backdrop-filter: blur(8px);
+}
+
+
+.food-hero-content h1 {
+
+    max-width: 900px;
+
+    margin: 0 0 18px;
+
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
+
+    font-size:
+        clamp(
+            2.8rem,
+            7vw,
+            6rem
+        );
+
+    line-height: 1.05;
+
+    font-weight: 900;
+
+    text-shadow:
+        0 5px 25px
+        rgba(0,0,0,.5);
+}
+
+
+.food-meta {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    align-items: center;
+
+    font-size: .9rem;
+
+    opacity: .9;
+}
+
+
+/* =========================
+   ARTICLE SECTION
+========================= */
+
+.food-article-section {
+
+    background: #f8fafc;
+
+    padding:
+        80px 20px
+        100px;
+}
+
+
+.food-container {
+
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        300px;
+
+    gap: 45px;
+
+    align-items: start;
+}
+
+
+/* =========================
+   ARTICLE
+========================= */
+
+.food-article {
+
+    background: white;
+
+    border-radius: 24px;
+
+    padding:
+        45px;
+
+    border:
+        1px solid
+        #e5e7eb;
+
+    box-shadow:
+        0 15px 45px
+        rgba(15,23,42,.07);
+}
+
+
+.food-intro {
+
+    padding-bottom: 30px;
+
+    margin-bottom: 35px;
+
+    border-bottom:
+        1px solid
+        #e5e7eb;
+}
+
+
+.intro-label {
+
+    color: #d97706;
+
+    font-size: .72rem;
+
+    font-weight: 900;
+
+    letter-spacing: 3px;
+}
+
+
+.food-intro h2 {
+
+    margin:
+        12px 0 0;
+
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
+
+    font-size:
+        clamp(
+            1.8rem,
+            4vw,
+            2.7rem
+        );
+
+    color: #111827;
+
+    line-height: 1.25;
+}
+
+
+/* =========================
+   CONTENT
+========================= */
+
+.food-content {
+
+    color: #374151;
+
+    font-size: 1.08rem;
+
+    line-height: 2;
+
+}
+
+
+.food-content p {
+
+    margin-bottom: 25px;
+}
+
+
+/* =========================
+   TAGS
+========================= */
+
+.food-tags {
+
+    margin-top: 50px;
+
+    padding-top: 30px;
+
+    border-top:
+        1px solid
+        #e5e7eb;
+}
+
+
+.food-tags h4 {
+
+    margin-bottom: 15px;
+
+    font-size: 1rem;
+
+    color: #111827;
+}
+
+
+.tag-list {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+
+.food-tag {
+
+    padding:
+        7px 13px;
+
+    background:
+        #fff7ed;
+
+    color:
+        #c2410c;
+
+    border-radius: 30px;
+
+    font-size: .8rem;
+
+    font-weight: 700;
+}
+
+
+/* =========================
+   ACTIONS
+========================= */
+
+.food-actions {
+
+    margin-top: 45px;
+
+    padding-top: 30px;
+
+    border-top:
+        1px solid
+        #e5e7eb;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+}
+
+
+.back-button,
+.category-button,
+.edit-button,
+.delete-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding:
+        12px 20px;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-weight: 700;
+
+    font-size: .9rem;
+
+    transition:
+        all .2s ease;
+}
+
+
+.back-button {
+
+    background:
+        #111827;
+
+    color: white;
+}
+
+
+.back-button:hover {
+
+    background:
+        #374151;
+
+    color: white;
+
+    transform:
+        translateY(-2px);
+}
+
+
+.category-button {
+
+    background:
+        #2563eb;
+
+    color: white;
+}
+
+
+.category-button:hover {
+
+    background:
+        #1d4ed8;
+
+    color: white;
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* EDIT */
+
+.edit-button {
+
+    background:
+        #f3f4f6;
+
+    color:
+        #374151;
+
+    border:
+        1px solid
+        #d1d5db;
+}
+
+
+.edit-button:hover {
+
+    background:
+        #e5e7eb;
+
+    color:
+        #111827;
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* DELETE */
+
+.delete-button {
+
+    background:
+        #fee2e2;
+
+    color:
+        #dc2626;
+
+    border:
+        1px solid
+        #fecaca;
+}
+
+
+.delete-button:hover {
+
+    background:
+        #fecaca;
+
+    color:
+        #b91c1c;
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.food-sidebar {
+
+    position: sticky;
+
+    top: 25px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+
+.sidebar-card {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 20px;
+
+    border:
+        1px solid
+        #e5e7eb;
+
+    box-shadow:
+        0 12px 35px
+        rgba(15,23,42,.06);
+}
+
+
+.sidebar-icon {
+
+    font-size: 3rem;
+
+    margin-bottom: 15px;
+}
+
+
+.sidebar-card h3 {
+
+    margin:
+        0 0 12px;
+
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
+
+    font-size: 1.5rem;
+
+    color: #111827;
+}
+
+
+.sidebar-card p {
+
+    color: #6b7280;
+
+    line-height: 1.7;
+
+    font-size: .92rem;
+
+    margin: 0;
+}
+
+
+.small-card {
+
+    padding: 25px;
+}
+
+
+.sidebar-label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #9ca3af;
+
+    font-size: .7rem;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+}
+
+
+.small-card h4 {
+
+    margin:
+        0 0 12px;
+
+    color: #111827;
+
+    font-size: 1.2rem;
+}
+
+
+.small-card a {
+
+    color: #2563eb;
+
+    text-decoration: none;
+
+    font-weight: 700;
+
+    font-size: .85rem;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 800px) {
+
+    .food-detail-hero {
+
+        height: 60vh;
+
+        min-height: 420px;
+    }
+
+
+    .food-hero-content {
+
+        padding:
+            35px 20px;
+    }
+
+
+    .food-hero-content h1 {
+
+        font-size:
+            clamp(
+                2.5rem,
+                12vw,
+                4rem
+            );
+    }
+
+
+    .food-container {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .food-sidebar {
+
+        position: static;
+
+    }
+
+
+    .food-article {
+
+        padding:
+            28px 22px;
+
+    }
+
+
+    .food-article-section {
+
+        padding:
+            50px 15px
+            70px;
+    }
+
+}
+
+</style>
 
 {% endblock %}

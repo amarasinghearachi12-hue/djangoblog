@@ -1,0 +1,47 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<div style="
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+">
+
+    <h1>Create an Account</h1>
+
+    <p>
+        Create your DjangoBlog account.
+    </p>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button
+            type="submit"
+            class="btn btn-primary"
+        >
+            Register
+        </button>
+
+    </form>
+
+    <p style="margin-top: 20px;">
+        Already have an account?
+
+        <a href="{% url 'login' %}">
+            Login
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}
