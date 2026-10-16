@@ -1,4 +1,4 @@
-
+```html
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,405 +6,222 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %}DjangoBlog{% endblock %}</title>
+    <title>{% block title %}LankaVibe | Discover Sri Lanka{% endblock %}</title>
 
     <style>
         * {
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             margin: 0;
-            font-family: Inter, -apple-system, BlinkMacSystemFont,
-                "Segoe UI", Arial, sans-serif;
-            background: #f5f7fb;
-            color: #1f2937;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #fff;
+            color: #202020;
+            line-height: 1.6;
         }
 
         a {
-            text-decoration: none;
+            color: inherit;
         }
 
-        /* NAVBAR */
-        .navbar {
-            background: linear-gradient(135deg, #111827, #1f2937);
-            padding: 16px 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        .lv-navbar {
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 100;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            box-shadow: 0 3px 15px #00000008;
         }
 
-        .navbar-container {
+        .lv-nav-inner {
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            min-height: 76px;
+            margin: auto;
+            padding: 12px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 20px;
-        }
-
-        .navbar-brand {
-            color: white;
-            font-size: 1.35rem;
-            font-weight: 800;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-        }
-
-        .navbar-brand:hover {
-            color: #93c5fd;
-        }
-
-        .navbar-buttons {
-            display: flex;
-            align-items: center;
-            gap: 10px;
             flex-wrap: wrap;
         }
 
-        /* BUTTONS */
-        .btn {
-            display: inline-block;
-            padding: 9px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            text-align: center;
+        .lv-logo {
+            color: #b51f2e;
+            font-size: 27px;
+            font-weight: 800;
+            text-decoration: none;
+            letter-spacing: -.5px;
         }
 
-        .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .btn-outline-light {
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            background: transparent;
-        }
-
-        .btn-outline-light:hover {
-            background: white;
-            color: #111827;
-        }
-
-        .btn-primary {
-            color: white;
-            background: #2563eb;
-            border: 1px solid #2563eb;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-            border-color: #1d4ed8;
-        }
-
-        .btn-danger {
-            color: white;
-            background: #dc2626;
-            border: 1px solid #dc2626;
-        }
-
-        .btn-danger:hover {
-            background: #b91c1c;
-            border-color: #b91c1c;
-        }
-
-        .user-greeting {
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 600;
-            padding: 9px 5px;
-        }
-
-        .logout-form {
-            display: inline;
-            margin: 0;
-        }
-
-        .logout-form button {
-            font-family: inherit;
-        }
-
-        /* FLASH MESSAGES */
-        .messages-container {
-            max-width: 1160px;
-            margin: 20px auto 0;
-            padding: 0 20px;
-        }
-
-        .alert {
-            position: relative;
-            padding: 15px 45px 15px 18px;
-            margin-bottom: 12px;
-            border: 1px solid transparent;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
-        }
-
-        .alert-success {
-            color: #166534;
-            background: #dcfce7;
-            border-color: #86efac;
-        }
-
-        .alert-danger {
-            color: #991b1b;
-            background: #fee2e2;
-            border-color: #fca5a5;
-        }
-
-        .alert-error {
-            color: #991b1b;
-            background: #fee2e2;
-            border-color: #fca5a5;
-        }
-
-        .alert-warning {
-            color: #92400e;
-            background: #fef3c7;
-            border-color: #fcd34d;
-        }
-
-        .alert-info {
-            color: #1e40af;
-            background: #dbeafe;
-            border-color: #93c5fd;
-        }
-
-        .alert-close {
-            position: absolute;
-            top: 7px;
-            right: 12px;
-            border: none;
-            background: transparent;
-            color: inherit;
-            font-size: 1.5rem;
-            cursor: pointer;
-            opacity: 0.7;
-        }
-
-        .alert-close:hover {
-            opacity: 1;
-        }
-
-        /* MAIN */
-        main {
-            min-height: calc(100vh - 150px);
-        }
-
-        /* FOOTER */
-        footer {
-            margin-top: 60px;
-            background: #111827;
-            color: #9ca3af;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 35px 20px;
+        .lv-nav-links {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            flex-wrap: wrap;
             gap: 20px;
         }
 
-        .footer-title {
-            color: white;
-            font-weight: 700;
-            margin-bottom: 6px;
+        .lv-nav-links a {
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
         }
 
-        .footer-text {
-            margin: 0;
-            font-size: 0.9rem;
+        .lv-nav-links a:hover {
+            color: #b51f2e;
         }
 
-        .footer-links {
-            display: flex;
-            gap: 18px;
+        .lv-nav-button {
+            background: #b51f2e;
+            color: white !important;
+            padding: 9px 16px;
+            border-radius: 22px;
         }
 
-        .footer-links a {
-            color: #9ca3af;
-            transition: 0.2s ease;
+        .lv-container {
+            max-width: 1200px;
+            width: calc(100% - 40px);
+            min-height: 65vh;
+            margin: 35px auto 55px;
         }
 
-        .footer-links a:hover {
-            color: white;
+        .lv-messages {
+            margin-bottom: 20px;
         }
 
-        /* MOBILE */
-        @media (max-width: 768px) {
-            .navbar-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
+        .lv-message {
+            padding: 13px 17px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #fff1f1;
+            border: 1px solid #f0c7cb;
+            color: #8e1724;
+        }
 
-            .navbar-brand {
-                text-align: center;
-            }
+        .lv-footer {
+            background: #171717;
+            color: #eee;
+            padding: 35px 20px;
+            text-align: center;
+        }
 
-            .navbar-buttons {
+        .lv-footer strong {
+            color: #ff6975;
+            font-size: 21px;
+        }
+
+        .lv-footer p {
+            color: #ccc;
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 650px) {
+            .lv-nav-inner {
                 justify-content: center;
+                padding: 15px;
             }
 
-            .footer-container {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .footer-links {
+            .lv-nav-links {
                 justify-content: center;
-                flex-wrap: wrap;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .navbar-buttons {
-                flex-direction: column;
-                width: 100%;
+                gap: 13px;
             }
 
-            .navbar-buttons .btn,
-            .navbar-buttons .logout-form,
-            .navbar-buttons .logout-form button {
-                width: 100%;
-                text-align: center;
-            }
-
-            .user-greeting {
-                text-align: center;
-                width: 100%;
+            .lv-container {
+                width: calc(100% - 28px);
+                margin-top: 22px;
             }
         }
     </style>
+
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <div class="navbar-container">
+    <header class="lv-navbar">
+        <div class="lv-nav-inner">
 
-            <a class="navbar-brand" href="{% url 'blog:home' %}">
-                ✨ DjangoBlog
+            <a class="lv-logo" href="{% url 'blog:home' %}">
+                ✨ LankaVibe
             </a>
+            ```django
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                 role="alert">
+                {{ message }}
 
-            <div class="navbar-buttons">
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close">
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+```
 
-                <a class="btn btn-outline-light"
-                   href="{% url 'blog:home' %}">
-                    Home
-                </a>
+            <nav class="lv-nav-links">
+                <a href="{% url 'blog:home' %}">Home</a>
+                <a href="{% url 'blog:about' %}">About</a>
+                <a href="{% url 'blog:contact' %}">Contact</a>
 
                 {% if user.is_authenticated %}
-
-                    <a class="btn btn-primary"
-                       href="{% url 'blog:post_create' %}">
-                        + New Post
+                    <a href="{% url 'blog:my_posts' %}">My Posts</a>
+                    <a href="{% url 'blog:post_create' %}" class="lv-nav-button">
+                        + Create Post
                     </a>
+                    <span>Hi, {{ user.username }}</span>
 
-                    <a class="btn btn-outline-light"
-                       href="{% url 'blog:my_posts' %}">
-                        My Posts
-                    </a>
-
-                    <span class="user-greeting">
-                        Hi, {{ user.username }}
-                    </span>
-
-                    <form method="post"
-                          action="{% url 'logout' %}"
-                          class="logout-form">
+                    <form method="post" action="{% url 'logout' %}"
+                          style="display:inline;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">
+                        <button type="submit"
+                                style="border:0;background:none;font:inherit;
+                                font-weight:600;cursor:pointer;">
                             Logout
                         </button>
                     </form>
-
                 {% else %}
-
-                    <a class="btn btn-outline-light"
-                       href="{% url 'login' %}">
-                        Login
-                    </a>
-
-                    <a class="btn btn-primary"
-                       href="{% url 'blog:register' %}">
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'blog:register' %}" class="lv-nav-button">
                         Register
                     </a>
-
                 {% endif %}
+            </nav>
 
+        </div>
+    </header>
+
+    <main class="lv-container">
+
+        {% if messages %}
+            <div class="lv-messages">
+                {% for message in messages %}
+                    <div class="lv-message">{{ message }}</div>
+                {% endfor %}
             </div>
-        </div>
-    </nav>
+        {% endif %}
 
-    <!-- FLASH MESSAGES -->
-    {% if messages %}
-        <div class="messages-container">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}"
-                     role="alert">
+        {% block content %}{% endblock %}
 
-                    {{ message }}
-
-                    <button type="button"
-                            class="alert-close"
-                            aria-label="Close"
-                            onclick="this.parentElement.remove()">
-                        &times;
-                    </button>
-
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <!-- MAIN CONTENT -->
-    <main>
-        {% block content %}
-        {% endblock %}
     </main>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="footer-container">
-
-            <div>
-                <div class="footer-title">
-                    ✨ DjangoBlog
-                </div>
-
-                <p class="footer-text">
-                    Simple blog built with Django & PostgreSQL.
-                </p>
-            </div>
-
-            <div class="footer-links">
-
-                <a href="{% url 'blog:home' %}">
-                    Home
-                </a>
-
-                <a href="{% url 'blog:about' %}">
-                    About
-                </a>
-
-                <a href="{% url 'blog:contact' %}">
-                    Contact
-                </a>
-
-            </div>
-        </div>
+    <footer class="lv-footer">
+        <strong>✨ LankaVibe 🇱🇰</strong>
+        <p>Discover Sri Lanka — its places, food and culture.</p>
+        <p>© {% now "Y" %} LankaVibe. Built with Django &amp; PostgreSQL.</p>
     </footer>
+
+    {% block extra_js %}{% endblock %}
 
 </body>
 </html>
+```

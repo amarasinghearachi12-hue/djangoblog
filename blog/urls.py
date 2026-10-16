@@ -1,5 +1,6 @@
 
 from django.urls import path
+from. import views
 
 from .views import (
     PostListView,
@@ -117,4 +118,15 @@ urlpatterns = [
         CategoryPostListView.as_view(),
         name="category_posts",
     ),
+
+
+    path(
+    "test-403/",
+    views.test_403,
+    name="test_403",
+),
+
 ]
+
+    
+

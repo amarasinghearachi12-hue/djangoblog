@@ -1,10 +1,10 @@
 
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.contrib.auth import login
+from django.contrib.auth import login, models
 from django.contrib import messages
-from django.db import models
-
+from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     UserPassesTestMixin,
@@ -60,7 +60,6 @@ class PostListView(ListView):
 
 # =========================================================
 # Post Detail
-# Published posts are public; drafts are visible only to their author
 # =========================================================
 
 class PostDetailView(DetailView):
@@ -70,12 +69,12 @@ class PostDetailView(DetailView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Post.objects.filter(
-                models.Q(status="published")
+             post=Post.objects.filter( 
+                  models.Q(status="published")
                 | models.Q(author=self.request.user)
             )
 
-        return Post.objects.filter(status="published")
+        return Post
 
 
 # =========================================================
@@ -91,21 +90,19 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
 
-        response = super().form_valid(form)
-
         messages.success(
             self.request,
             "Post created successfully!"
         )
 
-        return response
+        return super().form_valid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
 
 
 # =========================================================
-# Update Post
+# Update Post - Author Only
 # =========================================================
 
 class PostUpdateView(
@@ -124,19 +121,9 @@ class PostUpdateView(
     def get_success_url(self):
         return self.object.get_absolute_url()
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-
-        messages.success(
-            self.request,
-            "Post updated successfully!"
-        )
-
-        return response
-
 
 # =========================================================
-# Delete Post
+# Delete Post - Author Only
 # =========================================================
 
 class PostDeleteView(
@@ -152,14 +139,6 @@ class PostDeleteView(
     def test_func(self):
         return self.get_object().author == self.request.user
 
-    def form_valid(self, form):
-        messages.success(
-            self.request,
-            "Post deleted successfully!"
-        )
-
-        return super().form_valid(form)
-
 
 # =========================================================
 # About
@@ -169,7 +148,7 @@ def about(request):
     return render(
         request,
         "blog/about.html",
-        {"team": "DjangoBlog Team"},
+        {"team": "LankaVibe Team"},
     )
 
 
@@ -194,12 +173,12 @@ class CategoryPostListView(ListView):
     def get_queryset(self):
         self.category = get_object_or_404(
             Category,
-            name__iexact=self.kwargs["category_name"]
+            name__iexact=self.kwargs["category_name"],
         )
 
         return Post.objects.filter(
             status="published",
-            category=self.category
+            category=self.category,
         ).order_by("-created_at")
 
     def get_context_data(self, **kwargs):
@@ -228,17 +207,14 @@ class MyPostsView(LoginRequiredMixin, ListView):
 
 # =========================================================
 # Custom 403 Forbidden Page
-# IMPORTANT: This function must be outside all classes.
 # =========================================================
 
 def custom_403(request, exception):
-    messages.error(
-        request,
-        "You are not the owner of this post."
-    )
-
     return render(
         request,
         "blog/403.html",
-        status=403
+        status=403,
     )
+def test_403(request):
+    raise PermissionDenied
+

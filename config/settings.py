@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from django.contrib.messages import constants as messages
 
 load_dotenv()
 
@@ -145,6 +146,10 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+MESSAGE_TAGS = {
+    messages.ERROR: "danger",
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
