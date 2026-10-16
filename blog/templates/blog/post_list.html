@@ -1,4 +1,4 @@
-```html
+```django
 {% extends 'blog/base.html' %}
 
 {% block title %}LankaVibe | Discover Sri Lanka{% endblock %}
@@ -14,20 +14,19 @@
     }
 
     .lv-hero {
-    background:
-        linear-gradient(
-            rgba(0, 0, 0, 0.35),
-            rgba(0, 0, 0, 0.55)
-        ),
-        url("/static/blog/images/ravana-falls.jpg")
-        center / cover no-repeat;
-
-    color: white;
-    padding: 100px 25px;
-    border-radius: 18px;
-    text-align: center;
-    margin-bottom: 35px;
-}
+        background:
+            linear-gradient(
+                rgba(0, 0, 0, 0.35),
+                rgba(0, 0, 0, 0.55)
+            ),
+            url("/static/blog/images/ravana-falls.jpg")
+            center / cover no-repeat;
+        color: white;
+        padding: 100px 25px;
+        border-radius: 18px;
+        text-align: center;
+        margin-bottom: 35px;
+    }
 
     .lv-hero h1 {
         font-size: clamp(32px, 5vw, 56px);
@@ -83,59 +82,63 @@
 
     .lv-posts {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(240px, 1fr)
+        );
         gap: 22px;
     }
 
-    .lv-card {
+    .lv-posts > * {
+        min-width: 0;
+    }
+
+    .lv-posts .card {
+        height: 100%;
+        overflow: hidden;
         border: 1px solid #eee;
         border-radius: 15px;
-        overflow: hidden;
         background: white;
         box-shadow: 0 5px 20px #0000000c;
         transition: transform .2s ease;
     }
 
-    .lv-card:hover {
+    .lv-posts .card:hover {
         transform: translateY(-4px);
     }
 
-    .lv-card img {
+    .lv-posts .card-img-top {
         width: 100%;
         height: 210px;
         object-fit: cover;
         display: block;
     }
 
-    .lv-card-body {
+    .lv-posts .card-body {
         padding: 20px;
     }
 
-    .lv-card-body h3 {
-        margin: 0 0 10px;
+    .lv-posts .card-title {
         font-size: 21px;
+        margin-bottom: 10px;
     }
 
-    .lv-card-body h3 a {
-        text-decoration: none;
+    .lv-posts .card-title a {
         color: #222;
+        text-decoration: none;
     }
 
-    .lv-card-body p {
+    .lv-posts .card-text {
         color: #666;
         line-height: 1.7;
     }
 
-    .lv-meta {
-        color: #a71927;
+    .lv-posts .text-muted {
         font-size: 13px;
-        margin-bottom: 10px;
     }
 
-    .lv-read {
-        color: #b51f2e;
-        font-weight: bold;
-        text-decoration: none;
+    .lv-posts .btn {
+        margin: 3px 2px 3px 0;
     }
 
     .lv-empty {
@@ -149,101 +152,115 @@
         .lv-hero {
             padding: 45px 18px;
         }
+
+        .lv-posts {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <div class="lv-home">
 
+    <!-- Hero section -->
     <section class="lv-hero">
         <h1>Discover the Beauty of Sri Lanka 🇱🇰</h1>
+
         <p>
             Explore beautiful destinations, delicious Sri Lankan food,
             rich culture and unforgettable experiences with LankaVibe.
         </p>
-        <a class="lv-button" href="#discover">Explore Sri Lanka ↓</a>
+
+        <a class="lv-button" href="#discover">
+            Explore Sri Lanka ↓
+        </a>
     </section>
 
+    <!-- Discover section -->
     <section id="discover">
+
         <div class="lv-heading">
             <h2>Discover Sri Lanka</h2>
             <p>Find your next adventure, one story at a time.</p>
         </div>
 
+        <!-- Categories -->
         {% if categories %}
-        <div class="lv-categories">
-            {% for category in categories %}
-                <a class="lv-category"
-                   href="{% url 'blog:category_posts' category_name=category.name %}">
-                    {{ category.name }}
-                </a>
-            {% endfor %}
-        </div>
+            <div class="lv-categories">
+                {% for category in categories %}
+                    <a
+                        class="lv-category"
+                        href="{% url 'blog:category_posts' category_name=category.name %}"
+                    >
+                        {{ category.name }}
+                    </a>
+                {% endfor %}
+            </div>
         {% endif %}
 
+        <!-- Latest stories -->
         <div class="lv-heading">
             <h2>Latest Stories</h2>
-            <p>Travel, food and culture from the Pearl of the Indian Ocean.</p>
+            <p>
+                Travel, food and culture from the Pearl of the Indian Ocean.
+            </p>
         </div>
 
         {% if posts %}
-        <div class="lv-posts">
-            {% for post in posts %}
-            <article class="lv-card">
+            <div class="lv-posts">
 
-                {% if post.cover_image %}
-                    <img src="{{ post.cover_image.url }}"
-                         alt="{{ post.title }}">
-                {% endif %}
-
-                <div class="lv-card-body">
-                    {% if post.category %}
-                    <div class="lv-meta">
-                        {{ post.category.name }}
+                {% for post in page_obj %}
+                    {% include "blog/partials/_post_card.html" %}
+                {% empty %}
+                    <div class="lv-empty">
+                        <h3>No stories yet</h3>
+                        <p>
+                            Log in and create your first Sri Lankan story!
+                        </p>
                     </div>
-                    {% endif %}
+                {% endfor %}
 
-                    <h3>
-                        <a href="{{ post.get_absolute_url }}">
-                            {{ post.title }}
-                        </a>
-                    </h3>
-
-                    <p>{{ post.content|striptags|truncatewords:25 }}</p>
-
-                    <a class="lv-read" href="{{ post.get_absolute_url }}">
-                        Read Story →
-                    </a>
-                </div>
-            </article>
-            {% endfor %}
-        </div>
-
+            </div>
         {% else %}
-        <div class="lv-empty">
-            <h3>No stories yet</h3>
-            <p>Log in and create your first Sri Lankan story!</p>
-        </div>
+            <div class="lv-empty">
+                <h3>No stories yet</h3>
+                <p>
+                    Log in and create your first Sri Lankan story!
+                </p>
+            </div>
         {% endif %}
 
+        <!-- Pagination -->
         {% if is_paginated %}
-        <div style="text-align:center; margin:30px 0;">
-            {% if page_obj.has_previous %}
-                <a class="lv-category"
-                   href="?page={{ page_obj.previous_page_number }}">← Previous</a>
-            {% endif %}
+            <div style="text-align: center; margin: 30px 0;">
 
-            <span style="padding:10px;">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-            </span>
+                {% if page_obj.has_previous %}
+                    <a
+                        class="lv-category"
+                        href="?page={{ page_obj.previous_page_number }}#discover"
+                    >
+                        ← Previous
+                    </a>
+                {% endif %}
 
-            {% if page_obj.has_next %}
-                <a class="lv-category"
-                   href="?page={{ page_obj.next_page_number }}">Next →</a>
-            {% endif %}
-        </div>
+                <span style="padding: 10px;">
+                    Page {{ page_obj.number }}
+                    of {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a
+                        class="lv-category"
+                        href="?page={{ page_obj.next_page_number }}#discover"
+                    >
+                        Next →
+                    </a>
+                {% endif %}
+
+            </div>
         {% endif %}
 
     </section>
+
 </div>
 
 {% endblock %}

@@ -1,9 +1,8 @@
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.contrib.auth import login, models
+from django.contrib.auth import login
 from django.contrib import messages
-from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
@@ -38,7 +37,7 @@ class RegisterView(CreateView):
 
 
 # =========================================================
-# Post List / Home
+# Post List / Home + Category Filtering
 # =========================================================
 
 class PostListView(ListView):
@@ -48,13 +47,25 @@ class PostListView(ListView):
     paginate_by = 6
 
     def get_queryset(self):
-        return Post.objects.filter(
+        qs = Post.objects.filter(
             status="published"
         ).order_by("-created_at")
+
+        category_slug = self.request.GET.get("category")
+
+        if category_slug:
+            qs = qs.filter(
+                category__name__iexact=category_slug
+            )
+
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["categories"] = Category.objects.all()
+        context["selected_category"] = self.request.GET.get(
+            "category", ""
+        )
         return context
 
 
@@ -68,13 +79,14 @@ class PostDetailView(DetailView):
     context_object_name = "post"
 
     def get_queryset(self):
+        qs = Post.objects.filter(status="published")
+
         if self.request.user.is_authenticated:
-             post=Post.objects.filter( 
-                  models.Q(status="published")
-                | models.Q(author=self.request.user)
+            qs = qs | Post.objects.filter(
+                author=self.request.user
             )
 
-        return Post
+        return qs.distinct()
 
 
 # =========================================================
@@ -92,7 +104,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
         messages.success(
             self.request,
-            "Post created successfully!"
+            "Post created successfully!",
         )
 
         return super().form_valid(form)
@@ -108,7 +120,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 class PostUpdateView(
     LoginRequiredMixin,
     UserPassesTestMixin,
-    UpdateView
+    UpdateView,
 ):
     model = Post
     form_class = PostForm
@@ -129,7 +141,7 @@ class PostUpdateView(
 class PostDeleteView(
     LoginRequiredMixin,
     UserPassesTestMixin,
-    DeleteView
+    DeleteView,
 ):
     model = Post
     template_name = "blog/post_confirm_delete.html"
@@ -161,7 +173,7 @@ def contact(request):
 
 
 # =========================================================
-# Category Posts
+# Category Posts Page
 # =========================================================
 
 class CategoryPostListView(ListView):
@@ -215,6 +227,7 @@ def custom_403(request, exception):
         "blog/403.html",
         status=403,
     )
+
+
 def test_403(request):
     raise PermissionDenied
-

@@ -1,13 +1,11 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-from PIL import Image
 from django.conf import settings
-
+from PIL import Image
 
 
 class Category(models.Model):
-
     name = models.CharField(
         max_length=100,
         unique=True
@@ -18,7 +16,6 @@ class Category(models.Model):
 
 
 class Tag(models.Model):
-
     name = models.CharField(
         max_length=100,
         unique=True
@@ -89,30 +86,43 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
 
+        # Generate a unique slug for new posts
         if not self.slug:
-            self.slug = slugify(self.title)
+            base_slug = slugify(self.title)
 
+            # Fallback for titles that produce an empty slug
+            if not base_slug:
+                base_slug = "post"
+
+            slug = base_slug
+            counter = 1
+
+            while Post.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            self.slug = slug
+
+        # Save the post first
         super().save(*args, **kwargs)
 
+        # Resize large cover images while preserving proportions
         if self.cover_image:
-
             img_path = self.cover_image.path
 
-            img = Image.open(img_path)
-
-            if img.height > 800 or img.width > 800:
-
-                img.thumbnail((800, 800))
-
-                img.save(img_path)
+            try:
+                with Image.open(img_path) as img:
+                    if img.height > 800 or img.width > 800:
+                        img.thumbnail((800, 800))
+                        img.save(img_path)
+            except (OSError, ValueError):
+                # Skip resizing if the image cannot be processed
+                pass
 
     def get_absolute_url(self):
-
         return reverse(
             "blog:post_detail",
-            kwargs={
-                "slug": self.slug
-            }
+            kwargs={"slug": self.slug}
         )
 
     def __str__(self):

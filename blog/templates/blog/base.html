@@ -2,6 +2,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,6 +30,8 @@
             color: inherit;
         }
 
+        /* Navbar */
+
         .lv-navbar {
             position: sticky;
             top: 0;
@@ -47,7 +50,6 @@
             align-items: center;
             justify-content: space-between;
             gap: 20px;
-            flex-wrap: wrap;
         }
 
         .lv-logo {
@@ -56,6 +58,7 @@
             font-weight: 800;
             text-decoration: none;
             letter-spacing: -.5px;
+            white-space: nowrap;
         }
 
         .lv-nav-links {
@@ -75,12 +78,70 @@
             color: #b51f2e;
         }
 
-        .lv-nav-button {
+        /* Active navigation link */
+
+        .lv-nav-links a.lv-active {
+            color: #b51f2e;
+            font-weight: 800;
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 7px;
+        }
+
+        /* Create Post and Register buttons */
+
+        .lv-nav-links a.lv-nav-button {
             background: #b51f2e;
-            color: white !important;
+            color: white;
             padding: 9px 16px;
             border-radius: 22px;
+            text-decoration: none;
         }
+
+        .lv-nav-links a.lv-nav-button:hover {
+            background: #8e1724;
+            color: white;
+        }
+
+        .lv-nav-user {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .lv-logout-form {
+            margin: 0;
+        }
+
+        .lv-logout-button {
+            border: 0;
+            background: none;
+            color: #202020;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+
+        .lv-logout-button:hover {
+            color: #b51f2e;
+        }
+
+        /* Mobile menu button */
+
+        .lv-menu-toggle {
+            display: none;
+            border: 1px solid #e5b7bb;
+            border-radius: 8px;
+            background: white;
+            color: #b51f2e;
+            padding: 6px 12px;
+            font-size: 23px;
+            cursor: pointer;
+        }
+
+        /* Main content */
 
         .lv-container {
             max-width: 1200px;
@@ -88,6 +149,8 @@
             min-height: 65vh;
             margin: 35px auto 55px;
         }
+
+        /* Django messages */
 
         .lv-messages {
             margin-bottom: 20px;
@@ -101,6 +164,8 @@
             border: 1px solid #f0c7cb;
             color: #8e1724;
         }
+
+        /* Footer */
 
         .lv-footer {
             background: #171717;
@@ -120,20 +185,63 @@
             font-size: 14px;
         }
 
-        @media (max-width: 650px) {
+        /* Responsive navigation */
+
+        @media (max-width: 800px) {
             .lv-nav-inner {
-                justify-content: center;
-                padding: 15px;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                padding: 15px 20px;
+            }
+
+            .lv-menu-toggle {
+                display: block;
             }
 
             .lv-nav-links {
-                justify-content: center;
-                gap: 13px;
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 15px 0 8px;
+            }
+
+            .lv-nav-links.lv-menu-open {
+                display: flex;
+            }
+
+            .lv-nav-links a,
+            .lv-nav-links span {
+                padding: 6px 0;
+            }
+
+            .lv-nav-links a.lv-nav-button {
+                text-align: center;
+                padding: 9px 16px;
+            }
+
+            .lv-nav-links form {
+                width: 100%;
+            }
+
+            .lv-nav-links form button {
+                padding: 6px 0;
             }
 
             .lv-container {
                 width: calc(100% - 28px);
                 margin-top: 22px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .lv-logo {
+                font-size: 23px;
+            }
+
+            .lv-nav-inner {
+                padding: 12px;
             }
         }
     </style>
@@ -143,69 +251,110 @@
 
 <body>
 
+    <!-- Navbar -->
     <header class="lv-navbar">
         <div class="lv-nav-inner">
 
             <a class="lv-logo" href="{% url 'blog:home' %}">
                 ✨ LankaVibe
             </a>
-            ```django
-{% if messages %}
-    <div class="container mt-3">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
-                 role="alert">
-                {{ message }}
 
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert"
-                        aria-label="Close">
-                </button>
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
-```
+            <button
+                class="lv-menu-toggle"
+                id="lvMenuToggle"
+                type="button"
+                aria-label="Toggle navigation"
+                aria-controls="lvNavLinks"
+                aria-expanded="false"
+                onclick="toggleLvMenu(this)">
+                ☰
+            </button>
 
-            <nav class="lv-nav-links">
-                <a href="{% url 'blog:home' %}">Home</a>
-                <a href="{% url 'blog:about' %}">About</a>
-                <a href="{% url 'blog:contact' %}">Contact</a>
+            <nav class="lv-nav-links" id="lvNavLinks">
 
-                {% if user.is_authenticated %}
-                    <a href="{% url 'blog:my_posts' %}">My Posts</a>
-                    <a href="{% url 'blog:post_create' %}" class="lv-nav-button">
+                <a
+                    href="{% url 'blog:home' %}"
+                    class="{% if request.resolver_match.url_name == 'home' %}lv-active{% endif %}"
+                    {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
+                    Home
+                </a>
+
+                <a
+                    href="{% url 'blog:about' %}"
+                    class="{% if request.resolver_match.url_name == 'about' %}lv-active{% endif %}"
+                    {% if request.resolver_match.url_name == 'about' %}aria-current="page"{% endif %}>
+                    About
+                </a>
+
+                <a
+                    href="{% url 'blog:contact' %}"
+                    class="{% if request.resolver_match.url_name == 'contact' %}lv-active{% endif %}"
+                    {% if request.resolver_match.url_name == 'contact' %}aria-current="page"{% endif %}>
+                    Contact
+                </a>
+
+                {% if request.user.is_authenticated %}
+
+                    <a
+                        href="{% url 'blog:my_posts' %}"
+                        class="{% if request.resolver_match.url_name == 'my_posts' %}lv-active{% endif %}"
+                        {% if request.resolver_match.url_name == 'my_posts' %}aria-current="page"{% endif %}>
+                        My Posts
+                    </a>
+
+                    <a
+                        href="{% url 'blog:post_create' %}"
+                        class="lv-nav-button">
                         + Create Post
                     </a>
-                    <span>Hi, {{ user.username }}</span>
 
-                    <form method="post" action="{% url 'logout' %}"
-                          style="display:inline;">
+                    <span class="lv-nav-user">
+                        Hi, {{ request.user.username }}
+                    </span>
+
+                    <form
+                        method="post"
+                        action="{% url 'logout' %}"
+                        class="lv-logout-form">
                         {% csrf_token %}
-                        <button type="submit"
-                                style="border:0;background:none;font:inherit;
-                                font-weight:600;cursor:pointer;">
+
+                        <button
+                            type="submit"
+                            class="lv-logout-button">
                             Logout
                         </button>
                     </form>
+
                 {% else %}
-                    <a href="{% url 'login' %}">Login</a>
-                    <a href="{% url 'blog:register' %}" class="lv-nav-button">
+
+                    <a
+                        href="{% url 'login' %}"
+                        class="{% if request.resolver_match.url_name == 'login' %}lv-active{% endif %}">
+                        Login
+                    </a>
+
+                    <a
+                        href="{% url 'blog:register' %}"
+                        class="lv-nav-button">
                         Register
                     </a>
+
                 {% endif %}
+
             </nav>
 
         </div>
     </header>
 
+    <!-- Main content -->
     <main class="lv-container">
 
         {% if messages %}
             <div class="lv-messages">
                 {% for message in messages %}
-                    <div class="lv-message">{{ message }}</div>
+                    <div class="lv-message">
+                        {{ message }}
+                    </div>
                 {% endfor %}
             </div>
         {% endif %}
@@ -214,11 +363,23 @@
 
     </main>
 
+    <!-- Footer -->
     <footer class="lv-footer">
         <strong>✨ LankaVibe 🇱🇰</strong>
         <p>Discover Sri Lanka — its places, food and culture.</p>
         <p>© {% now "Y" %} LankaVibe. Built with Django &amp; PostgreSQL.</p>
     </footer>
+
+    <!-- Mobile navigation JavaScript -->
+    <script>
+        function toggleLvMenu(button) {
+            const menu = document.getElementById("lvNavLinks");
+            const isOpen = menu.classList.toggle("lv-menu-open");
+
+            button.setAttribute("aria-expanded", String(isOpen));
+            button.textContent = isOpen ? "✕" : "☰";
+        }
+    </script>
 
     {% block extra_js %}{% endblock %}
 
